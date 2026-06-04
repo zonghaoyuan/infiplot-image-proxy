@@ -1,22 +1,36 @@
 # infiplot-image-proxy — Cloudflare Worker.
 # See src/index.js for what it does and why.
 #
-# Deploy:
+# ── Deploy your own (anyone) ───────────────────────────────────────────────
 #   1. npm i -g wrangler     # one-time
 #   2. wrangler login        # one-time, OAuth flow in the browser
 #   3. wrangler deploy       # prints https://infiplot-image-proxy.<you>.workers.dev
 #   4. Paste that URL into your InfiPlot deploy as NEXT_PUBLIC_IMAGE_PROXY_URL.
 #
-# Optional config (defaults are fine for Runware). Either uncomment [vars]
-# below, or keep them as secrets:
-#   wrangler secret put ALLOWED_HOSTS      # e.g. "im.runware.ai,cdn.example.com"
-#   wrangler secret put ALLOWED_ORIGINS    # e.g. "https://infiplot.com"
+#   Optional config (defaults are fine for Runware) — set as Worker vars/secrets:
+#     wrangler secret put ALLOWED_HOSTS      # e.g. "im.runware.ai,cdn.example.com"
+#     wrangler secret put ALLOWED_ORIGINS    # e.g. "https://your-site.com"
+#
+# The top-level config below is generic, so the one-click "Deploy to Cloudflare"
+# button works for anyone. InfiPlot's own deploy uses [env.production] (custom
+# domain + origin lock); deploy it with:  wrangler deploy --env production
 
 name = "infiplot-image-proxy"
 main = "src/index.js"
 compatibility_date = "2025-01-01"
 workers_dev = true
 
-# [vars]
-# ALLOWED_HOSTS = "im.runware.ai"
-# ALLOWED_ORIGINS = ""
+# ── InfiPlot's own production deploy (maintainer only) ─────────────────────
+# img-proxy.infiplot.com is a Cloudflare Custom Domain on the infiplot.com zone
+# (auto-provisioned cert). ALLOWED_ORIGINS locks the proxy to the production +
+# staging sites; any other origin (Vercel previews, localhost) falls back to
+# direct-connect client-side. Anyone deploying their own copy can ignore this block.
+[env.production]
+name = "infiplot-image-proxy"
+workers_dev = true
+routes = [
+  { pattern = "img-proxy.infiplot.com", custom_domain = true }
+]
+
+[env.production.vars]
+ALLOWED_ORIGINS = "https://infiplot.com,https://staging.infiplot.com"
