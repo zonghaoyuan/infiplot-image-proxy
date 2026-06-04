@@ -1,0 +1,22 @@
+# infiplot-image-proxy — Cloudflare Worker.
+# See src/index.js for what it does and why.
+#
+# Deploy:
+#   1. npm i -g wrangler     # one-time
+#   2. wrangler login        # one-time, OAuth flow in the browser
+#   3. wrangler deploy       # prints https://infiplot-image-proxy.<you>.workers.dev
+#   4. Paste that URL into your InfiPlot deploy as NEXT_PUBLIC_IMAGE_PROXY_URL.
+#
+# Optional config (defaults are fine for Runware). Either uncomment [vars]
+# below, or keep them as secrets:
+#   wrangler secret put ALLOWED_HOSTS      # e.g. "im.runware.ai,cdn.example.com"
+#   wrangler secret put ALLOWED_ORIGINS    # e.g. "https://infiplot.com"
+
+name = "infiplot-image-proxy"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+workers_dev = true
+
+# [vars]
+# ALLOWED_HOSTS = "im.runware.ai"
+# ALLOWED_ORIGINS = ""
